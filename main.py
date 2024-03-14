@@ -2,20 +2,35 @@ import translator as tr
 
 t = tr.Translator()
 
+
 def corntorlloInput(input):
     for carattere in input:
-        valido = False
-        if carattere>='a' and carattere<='z':
-            valido = True
-    if valido == False:
-        print("Parola non valida!")
-    return valido
+        if not ('a' <= carattere <= 'z'):
+            print("Input non valido!")
+            return False
+    return True
+
+
+def corntorlloInput2(input):
+    for carattere in input:
+        if carattere == '?':
+            pass
+        elif not ('a' <= carattere <= 'z'):
+            print("Input non valido!")
+            return False
+    return True
+
+
+primoAccesso = True
+
 
 while(True):
 
     t.printMenu()
 
-    t.loadDictionary("dictionary.txt")
+    if primoAccesso:
+        t.loadDictionary("dictionary.txt")
+        primoAccesso = False
 
     txtIn = input()
 
@@ -31,15 +46,20 @@ while(True):
         print('Ok, quale parola devo aggiungere?')
         txtInStr = input()
         dati = txtInStr.split(' ')
-        if len(dati) == 2:
-            if corntorlloInput(dati[0]) and corntorlloInput(dati[1]):
-                t.dizionario.addWord(dati[0].lower(), dati[1].lower())
-                print("Parola Aggiunta")
-        elif len(dati) > 2:
 
+        valido = True
 
+        if len(dati) >= 2:
+            for dato in dati:
+                if corntorlloInput(dato):
+                    valido = True
+                else:
+                    valido = False
+                    break
 
-            print("Parola Aggiunta")
+            if valido:
+                t.handleAdd(dati)
+                print(dati)
         else:
             print("Inserire obbligatoriamente almeno due parole separate da uno spazio!")
         pass
@@ -47,9 +67,26 @@ while(True):
         print('Ok, quale parola devo cercare?')
         txtInStr = input()
         if corntorlloInput(txtInStr):
-            print(f"{txtInStr.lower()} significa {t.dizionario.translate(txtInStr.lower())}")
+            print(t.handleTranslate(txtInStr.lower()))
         pass
     if int(txtIn) == 3:
+        print('Ok, quale parola devo cercare?')
+        txtInStr = input()
+        conta = 0
+        for carattere in txtInStr:
+            if carattere == '?':
+                conta += 1
+        if conta == 1:
+            if corntorlloInput2(txtInStr):
+                trovati = t.handleWildCard(txtInStr)
+                if len(trovati[0]) == 1:
+                    print(trovati[0])
+                else:
+                    for trovato in trovati:
+                        print(f'{trovato[0]}:')
+                        print(trovato[1:])
+        else:
+            print('La wildcard deve contenere obbligatoriamente solo un "?"')
         pass
     if int(txtIn) == 4:
         print(t.dizionario)

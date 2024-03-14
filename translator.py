@@ -39,32 +39,41 @@ class Translator:
         nuoveTraduzioni = entry[1:]
         risultato = [entry[0]]
         for nuovaTraduzione in nuoveTraduzioni:
-            for traduzione in traduzioni:
-                if traduzione == nuovaTraduzione:
-                    print(f'{nuovaTraduzione} già presente')
-                else:
-                    self.dizionario.addWord(entry[0], nuovaTraduzione)
-                    risultato.append(nuovaTraduzione)
-                    print(f"{nuovaTraduzione} aggiunta")
+            if nuovaTraduzione in traduzioni:
+                 print(f'{nuovaTraduzione} Già presente')
+            else:
+                self.dizionario.addWord(entry[0], nuovaTraduzione)
+                risultato.append(nuovaTraduzione)
+                print(f"{nuovaTraduzione} Aggiunta")
         return risultato
 
     def handleTranslate(self, query):
         # query is a string <parola_aliena>
         traduzioni = []
-        for valore in self.dizionario.dizionario.values():
-            if query == valore:
-                traduzioni.append(valore)
+        for parolaDaTradurre in self.dizionario.dizionario.keys():
+            if query == parolaDaTradurre:
+                [traduzioni.append(i) for i in self.dizionario.translate(parolaDaTradurre)]
+        if len(traduzioni) == 0:
+            return ['Parola non Trovata']
         return traduzioni
 
-    def handleWildCard(self,query):
+    def handleWildCard(self, query):
         # query is a string with a ? --> <par?la_aliena>
-        pass
+        return self.dizionario.translateWordWildCard(query)
+
 
 def test():
     t = Translator()
     t.printMenu()
     print(t.loadDictionary('dictionary.txt'))
     print(t.dizionario.translate("taivas"))
+    t.dizionario.addWord("taivas", "mare")
+    print(t.handleAdd(["taivas", "cielo", "nuvola", "carro"]))
+    print(t.handleTranslate("taivas"))
+    t.handleAdd(["tailas", "carne", "pane", "pesce"])
+    print(t.handleWildCard("tai?as"))
+    print(t.dizionario.translate('siahbn'))
+    print(t.handleTranslate('bhbh'))
 
 if __name__ == "__main__":
     test()
